@@ -1,5 +1,6 @@
 package tests;
 
+import models.ReqresInTestsBodyModel;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -56,7 +57,9 @@ public class ReqresInTests extends TestBase {
 
     @Test
     void unSuccessfulRegisterUserTest() {
-        String logoPass = "{\"email\": \"sydney@fife\"}";
+        ReqresInTestsBodyModel logoPass = new ReqresInTestsBodyModel;
+        logoPass.setEmail("hercules@gmail.com");
+        logoPass.setPassword("hercules");
 
         given()
                 .header("x-api-key", apiKey)
