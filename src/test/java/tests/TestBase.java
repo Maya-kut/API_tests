@@ -6,7 +6,9 @@ import org.junit.jupiter.api.BeforeAll;
 public class TestBase {
 
 
-    public String apiKey = "reqres-free-v1";
+    public static String apiKey = "reqres-free-v1";
+    public static String registerEndpoint = "/register";
+    public static String userEndpoint = "/users/";
 
     @BeforeAll
     static void beforeAll() {

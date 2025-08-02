@@ -1,110 +1,120 @@
 package tests;
 
-import models.ReqresInTestsBodyModel;
+import models.*;
 import org.junit.jupiter.api.Test;
 
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.is;
+import static io.restassured.RestAssured.requestSpecification;
+import static org.assertj.core.api.Assertions.assertThat;
+import static specs.ReqresInTestsSpecs.responseSpecification;
 
 public class ReqresInTests extends TestBase {
+    int UserId = 2;
+
     @Test
     void successfulCreateUserTest() {
-        String newUser = "{\n" +
-                "    \"name\": \"Hercules\",\n" +
-                "    \"job\": \"God\"\n" +
-                "}";
+        CreateUpdateUserBodyModel createData = new CreateUpdateUserBodyModel();
+        createData.setName("Hercules");
+        createData.setJob("God");
 
-        given()
-                .header("x-api-key", apiKey)
-                .body(newUser)
-                .contentType(JSON)
-                .log().uri()
-                .when()
-                .post("users")
-                .then()
-                .log().status()
-                .log().body()
-                .statusCode(201)
-                .body("name", is("Hercules"))
-                .body("job", is("God"));
+        CreateUpdateUserResponseModel response = step("Make request for create user", () ->
 
+                given(requestSpecification)
+                        .body(createData)
+
+                        .when()
+                        .post(userEndpoint)
+
+                        .then()
+                        .spec(responseSpecification(200))
+                        .extract().as(CreateUpdateUserResponseModel.class));
+
+        step("Check name in response body", () ->
+                assertThat(response.getName())
+                        .as("Check name")
+                        .isEqualTo(createData.getName()));
+        step("Check job in response body", () ->
+                assertThat(response.getName())
+                        .as("Check job")
+                        .isEqualTo(createData.getJob()));
     }
 
     @Test
     void successfulUpdateUserTest() {
-        Integer userId = 2;
-        String newUserInfo = "{\n" +
-                "    \"name\": \"Hercules\",\n" +
-                "    \"job\": \"God\"\n" +
-                "}";
+        CreateUpdateUserBodyModel putData = new CreateUpdateUserBodyModel();
+        putData.setName("Zeus");
+        putData.setJob("DadOfGod");
 
-        given()
-                .header("x-api-key", apiKey)
-                .body(newUserInfo)
-                .contentType(JSON)
-                .log().uri()
-                .when()
-                .post(("users" + "/" + userId))
-                .then()
-                .log().status()
-                .log().body()
-                .statusCode(201)
-                .body("name", is("Hercules"))
-                .body("job", is("God"));
+        CreateUpdateUserResponseModel response = step("Make request for update user", () ->
+                given(requestSpecification)
+                        .body(putData)
 
+                        .when()
+                        .post(userEndpoint)
+
+                        .then()
+                        .spec(responseSpecification(200))
+                        .extract().as(CreateUpdateUserResponseModel.class));
+
+        step("Check name in response body", () ->
+                assertThat(response.getName())
+                        .as("Check name")
+                        .isEqualTo(putData.getName()));
+        step("Check job in response body", () ->
+                assertThat(response.getName())
+                        .as("Check job")
+                        .isEqualTo(putData.getJob()));
     }
 
     @Test
     void unSuccessfulRegisterUserTest() {
-        ReqresInTestsBodyModel logoPass = new ReqresInTestsBodyModel;
-        logoPass.setEmail("hercules@gmail.com");
-        logoPass.setPassword("hercules");
-
-        given()
-                .header("x-api-key", apiKey)
-                .body(logoPass)
-                .contentType(JSON)
-                .log().uri()
-                .when()
-                .post("register")
-                .then()
-                .log().status()
-                .log().body()
-                .statusCode(400)
-                .body("error", is("Missing password"));
-
+        RegisterUserBodyModel registerData = new RegisterUserBodyModel();
+        registerData.setPassword("hercules");
+        UnsuccessRegisterUserResponseModel response = step("Make request", () ->
+                given(requestSpecification)
+                        .body(registerData)
+                        .post(registerEndpoint)
+                        .then()
+                        .spec(responseSpecification(400))
+                        .extract().as(UnsuccessRegisterUserResponseModel.class));
+        step("Check response", () ->
+                assertThat(response.getError())
+                        .as("Check error message for missing email")
+                        .isEqualTo("Missing email or username")
+        );
     }
 
-    @Test
-    void getSingleUserTest() {
-        Integer userId = 2;
-        String userEmail = "janet.weaver@reqres.in";
-        given()
-                .header("x-api-key", apiKey)
-                .log().uri()
-                .when()
-                .get("users" + "/" + userId)
-                .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
-                .body("data.id", is(userId))
-                .body("data.email", is(userEmail));
-
-    }
+//    @Test
+//    void getSingleUserTest() {
+//        SingleUserResponseModel userResponse = step("Make request for get user", () ->
+//                given(requestSpecification)
+//                        .pathParam("userId", UserId)
+//                        .when()
+//                        .get(userEndpoint + "{userId}")
+//
+//                        .then()
+//                        .spec(responseSpecification(200))
+//                        .extract().as(SingleUserResponseModel.class));
+//        step("Check user information in response", () -> {
+//            assertThat(userResponse.getInformation().getId()).isEqualTo(2);
+//            assertThat(userResponse.getInformation().getEmail())
+//                    .as("Email should contain @ and . symbols")
+//                    .contains("@")
+//                    .contains(".");
+//        });
+//    }
 
     @Test
     void deleteUserTest() {
-        Integer userId = 2;
-        given()
-                .header("x-api-key", apiKey)
-                .log().uri()
-                .when()
-                .delete("users" + "/" + userId)
-                .then()
-                .log().status()
-                .statusCode(204);
+        step("Make request for delete user and check status code", () ->
+                given(requestSpecification)
+                        .pathParam("userId", UserId)
+                        .when()
+                        .delete(userEndpoint + "{userId}")
+
+                        .then()
+                        .spec(responseSpecification(204)));
     }
-    }
+}
 

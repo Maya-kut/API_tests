@@ -8,10 +8,10 @@ repositories {
     mavenCentral()
 }
 
-def jacksonVersion = "2.16.1",
-    restAssuredVersion = "5.4.0",
+def restAssuredVersion = "5.4.0",
     allureVersion = "2.21.0",
-    junitVersion = "5.10.1"
+    junitVersion = "5.10.1",
+    jacksonVersion = "2.16.1"
 
 allure {
     report {
@@ -43,9 +43,13 @@ dependencies {
     )
 }
 
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
 tasks.withType(Test) {
     useJUnitPlatform()
-    systemProperty "file.encoding", "UTF-8"
+    systemProperties(System.getProperties())
 
     testLogging {
         lifecycle {
