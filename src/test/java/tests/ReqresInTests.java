@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.requestSpecification;
 import static org.assertj.core.api.Assertions.assertThat;
 import static specs.ReqresInTestsSpecs.responseSpecification;
+import static specs.ReqresInTestsSpecs.requestSpecification;
 
 public class ReqresInTests extends TestBase {
     int UserId = 2;
