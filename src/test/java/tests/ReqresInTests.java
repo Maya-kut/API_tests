@@ -1,13 +1,16 @@
 package tests;
 
-import models.*;
+import models.CreateUpdateUserBodyModel;
+import models.CreateUpdateUserResponseModel;
+import models.RegisterUserBodyModel;
+import models.UnsuccessRegisterUserResponseModel;
 import org.junit.jupiter.api.Test;
 
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static specs.ReqresInTestsSpecs.responseSpecification;
 import static specs.ReqresInTestsSpecs.requestSpecification;
+import static specs.ReqresInTestsSpecs.responseSpecification;
 
 public class ReqresInTests extends TestBase {
     int UserId = 2;
@@ -27,7 +30,7 @@ public class ReqresInTests extends TestBase {
                         .post(userEndpoint)
 
                         .then()
-                        .spec(responseSpecification(200))
+                        .spec(responseSpecification(201))
                         .extract().as(CreateUpdateUserResponseModel.class));
 
         step("Check name in response body", () ->
@@ -54,7 +57,7 @@ public class ReqresInTests extends TestBase {
                         .post(userEndpoint)
 
                         .then()
-                        .spec(responseSpecification(200))
+                        .spec(responseSpecification(201))
                         .extract().as(CreateUpdateUserResponseModel.class));
 
         step("Check name in response body", () ->
@@ -85,25 +88,6 @@ public class ReqresInTests extends TestBase {
         );
     }
 
-//    @Test
-//    void getSingleUserTest() {
-//        SingleUserResponseModel userResponse = step("Make request for get user", () ->
-//                given(requestSpecification)
-//                        .pathParam("userId", UserId)
-//                        .when()
-//                        .get(userEndpoint + "{userId}")
-//
-//                        .then()
-//                        .spec(responseSpecification(200))
-//                        .extract().as(SingleUserResponseModel.class));
-//        step("Check user information in response", () -> {
-//            assertThat(userResponse.getInformation().getId()).isEqualTo(2);
-//            assertThat(userResponse.getInformation().getEmail())
-//                    .as("Email should contain @ and . symbols")
-//                    .contains("@")
-//                    .contains(".");
-//        });
-//    }
 
     @Test
     void deleteUserTest() {
