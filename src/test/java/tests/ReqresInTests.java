@@ -5,6 +5,7 @@ import models.CreateUpdateUserBodyModel;
 import models.CreateUpdateUserResponseModel;
 import models.RegisterUserBodyModel;
 import models.UnsuccessRegisterUserResponseModel;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static io.qameta.allure.Allure.step;
@@ -13,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static specs.ReqresInTestsSpecs.requestSpecification;
 import static specs.ReqresInTestsSpecs.responseSpecification;
 
+@Tag("api")
 public class ReqresInTests extends TestBase {
     int UserId = 2;
 
