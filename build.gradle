@@ -1,46 +1,64 @@
 plugins {
     id 'java-library'
-    id 'io.qameta.allure' version '2.11.2'
+    id 'io.qameta.allure' version '2.12.0'
     id "io.freefair.lombok" version "8.4"
-}
 
-repositories {
-    mavenCentral()
 }
-
-def restAssuredVersion = "5.4.0",
-    allureVersion = "2.21.0",
-    junitVersion = "5.10.1",
-    jacksonVersion = "2.16.1"
+def allureVersion = "2.21.0",
+    restAssuredVersion = "5.4.0",
+    selenideVersion = "6.19.1",
+    junitVersion = "5.10.0",
+    slf4jVersion = "2.0.7",
+    ownerVersion = "1.0.12",
+    assertjCoreVersion = "3.23.1",
+    webdriverVersion = "5.5.3"
 
 allure {
-    report {
-        version.set(allureVersion)
+    report { //секция репорта
+        version(allureVersion)
     }
-    adapter {
-        aspectjWeaver.set(true)
+    adapter { //отвечает за появление папочки build/allure-results
+        aspectjWeaver.set(true)//Обработка аннотации @Step
         frameworks {
-            junit5 {
-                adapterVersion.set(allureVersion)
+            junit5 { //название фреймворка
+                adapterVersion.set(allureVersion)//версия интеграции фреймворка и Allure
             }
         }
     }
 }
 
+repositories {
+    mavenCentral()
+
+}
+
+
+compileJava {
+    options.encoding = 'UTF-8'
+}
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+
 dependencies {
     testImplementation(
             "io.rest-assured:rest-assured:$restAssuredVersion",
             "io.rest-assured:json-schema-validator:$restAssuredVersion",
+            "com.codeborne:selenide:$selenideVersion",
+            "io.qameta.allure:allure-selenide:$allureVersion",
             "io.qameta.allure:allure-rest-assured:$allureVersion",
             "org.junit.jupiter:junit-jupiter:$junitVersion",
-            'org.slf4j:slf4j-simple:2.0.9',
-            'org.assertj:assertj-core:3.24.2',
+            "org.slf4j:slf4j-simple:$slf4jVersion",
+            "org.assertj:assertj-core:$assertjCoreVersion",
+            "io.github.bonigarcia:webdrivermanager:$webdriverVersion",
+            "org.aeonbits.owner:owner:$ownerVersion",
+            "commons-io:commons-io:2.6"
 
-            "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
-            "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion",
-            "com.fasterxml.jackson.core:jackson-core:$jacksonVersion",
-            "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
     )
+}
+dependencies {
+    implementation 'com.github.javafaker:javafaker:1.0.2'
 }
 
 tasks.withType(JavaCompile) {
@@ -58,3 +76,15 @@ tasks.withType(Test) {
         }
     }
 }
+
+test {
+    useJUnitPlatform()
+    systemProperties(System.getProperties())
+}
+
+task api_test(type: Test) {
+    useJUnitPlatform {
+        includeTags("api")
+    }
+}
+
